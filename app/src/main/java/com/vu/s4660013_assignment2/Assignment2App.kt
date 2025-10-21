@@ -1,7 +1,7 @@
-package com.vu.s4660013_assignment2
+package com.vu.s4660013_assignment2.utils
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class S4660013Assignment2App : Application()
+class Assignment2App : Application()

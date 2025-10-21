@@ -5,31 +5,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import s4660013_Assignment2.R
-import s4660013_Assignment2.data.network.EntityItem
+import com.vu.s4660013_assignment2.R
+import com.vu.s4660013_assignment2.data.EntityItem
 
 class DashboardAdapter(
-    private val items: List<EntityItem>,
+    private var entityList: List<EntityItem> = emptyList(),
     private val onItemClick: (EntityItem) -> Unit
-) : RecyclerView.Adapter<DashboardAdapter.EntityViewHolder>() {
+) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
 
-    inner class EntityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvProperty1: TextView = itemView.findViewById(R.id.tvProperty1)
-        val tvProperty2: TextView = itemView.findViewById(R.id.tvProperty2)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val nameTextView: TextView = itemView.findViewById(R.id.entityName)
+        val descriptionTextView: TextView = itemView.findViewById(R.id.entityDescription)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntityViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_entity, parent, false)
-        return EntityViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: EntityViewHolder, position: Int) {
-        val item = items[position]
-        holder.tvProperty1.text = item.property1
-        holder.tvProperty2.text = item.property2
-        holder.itemView.setOnClickListener { onItemClick(item) }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val entity = entityList[position]
+
+        holder.nameTextView.text = entity.name
+        holder.descriptionTextView.text = entity.description
+
+        holder.itemView.setOnClickListener {
+            onItemClick(entity)
+        }
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount(): Int = entityList.size
+
+    fun updateData(newList: List<EntityItem>) {
+        entityList = newList
+        notifyDataSetChanged()
+    }
 }

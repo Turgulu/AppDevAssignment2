@@ -3,29 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeScreenFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
-        android:id="@+id/homeScreenFragment"
-        android:name="com.vu.s4660013_assignment2.home.ui.HomeScreenFragment"
-        android:label="fragment_home_screen"
-        tools:layout="@layout/fragment_home_screen" >
+        android:id="@+id/loginFragment"
+        android:name="com.vu.s4660013_assignment2.ui.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_homeScreenFragment_to_dashboardFragment"
+            android:id="@+id/action_loginFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.vu.s4660013_assignment2.ui.DashboardFragment"
-        android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_dashboard" >
-        <argument
-            android:name="detail"
-            app:argType="com.vu.s4660013_assignment2.home.data.ResponseItem" />
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_dashboardFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment">
+            <argument
+                android:name="entity"
+                app:argType="com.vu.s4660013_assignment2.data.EntityItem" />
+        </action>
     </fragment>
+
     <fragment
-        android:id="@+id/profileFragment"
+        android:id="@+id/detailsFragment"
         android:name="com.vu.s4660013_assignment2.ui.DetailsFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_login" />
+        android:label="Details"
+        tools:layout="@layout/fragment_details" />
 </navigation>

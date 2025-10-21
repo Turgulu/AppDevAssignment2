@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.vu.s4660013_assignment2"
-    compileSdk = 34   // ✅ this is the key line that was missing
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.vu.s4660013_assignment2"
@@ -38,6 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -46,11 +50,25 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment)
+
+    // Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
@@ -64,11 +82,13 @@ dependencies {
     testImplementation("io.mockk:mockk-agent:1.13.12")
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
     androidTestImplementation("io.mockk:mockk-android:1.13.12")
     androidTestImplementation("io.mockk:mockk-agent:1.13.12")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
 }
 
 kapt {

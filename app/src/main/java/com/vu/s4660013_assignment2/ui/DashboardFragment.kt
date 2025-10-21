@@ -6,52 +6,78 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vu.s4660013_assignment2.R
+import com.vu.s4660013_assignment2.databinding.FragmentDashboardBinding
 import dagger.hilt.android.AndroidEntryPoint
-import s4660013_Assignment2.R
-import s4660013_Assignment2.databinding.FragmentS4660013DashboardBinding
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DashboardFragment : Fragment() {
 
-    private var _binding: FragmentS4660013DashboardBinding? = null
+    private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
     private val viewModel: DashboardViewModel by viewModels()
-    private lateinit var keypass: String
+
+    private lateinit var adapter: DashboardAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentS4660013DashboardBinding.inflate(inflater, container, false)
+        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        keypass = arguments?.getString("keypass") ?: return
-        val adapter = DashboardAdapter(emptyList()) { selectedItem ->
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupObservers()
+
+        // Get keypass from arguments
+        val keypass = arguments?.getString("keypass") ?: ""
+        if (keypass.isNotEmpty()) {
+            viewModel.fetchDashboardData(keypass)
+        } else {
+            // Handle error - no keypass provided
+            binding.progressBarDashboard.visibility = View.GONE
+        }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = DashboardAdapter(emptyList()) { entity ->
+            // Navigate to details screen with entity data
             val bundle = Bundle().apply {
-                putString("property1", selectedItem.property1)
-                putString("property2", selectedItem.property2)
-                putString("description", selectedItem.description)
+                putParcelable("entity", entity)
             }
             findNavController().navigate(R.id.action_dashboardFragment_to_detailsFragment, bundle)
         }
+
         binding.recyclerViewEntities.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewEntities.adapter = adapter
+    }
 
-        viewModel.entities.observe(viewLifecycleOwner) { list ->
-            (binding.recyclerViewEntities.adapter as DashboardAdapter).apply {
-                (this as DashboardAdapter).notifyDataSetChanged()
+    private fun setupObservers() {
+        lifecycleScope.launch {
+            viewModel.dashboardState.collect { state ->
+                when (state) {
+                    is DashboardState.Loading -> {
+                        binding.progressBarDashboard.visibility = View.VISIBLE
+                    }
+                    is DashboardState.Success -> {
+                        binding.progressBarDashboard.visibility = View.GONE
+                        adapter.updateData(state.entities)
+                    }
+                    is DashboardState.Error -> {
+                        binding.progressBarDashboard.visibility = View.GONE
+                        // You can show an error message here
+                    }
+                }
             }
         }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBarDashboard.visibility = if (loading) View.VISIBLE else View.GONE
-        }
-
-        viewModel.loadDashboard(keypass)
     }
 
     override fun onDestroyView() {
